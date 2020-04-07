@@ -78,7 +78,7 @@ namespace UnkillableAsyncConsumer
             await Task.Delay(5000);
 
             // close the connection with timeout, consumer is expected to be killed if the timeout passes
-            _connection.Close(1000);
+            _connection.Close(5000);
 
             Assert.True(true);
         }
