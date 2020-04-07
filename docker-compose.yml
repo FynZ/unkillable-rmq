@@ -1,0 +1,9 @@
+version: "3.4"
+services:
+  messagebus:
+    image: rabbitmq:3.6.6-management
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{error}]"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
