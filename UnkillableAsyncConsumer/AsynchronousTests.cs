@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -8,12 +7,12 @@ using Xunit;
 
 namespace UnkillableAsyncConsumer
 {
-    public class UnkillableAsyncConsumer : IClassFixture<Fixture>, IDisposable
+    public class AsynchronousTests : IClassFixture<AsynchronousFixture>, IDisposable
     {
-        private readonly Fixture _fixture;
+        private readonly AsynchronousFixture _fixture;
         private readonly IConnection _connection;
 
-        public UnkillableAsyncConsumer(Fixture fixture)
+        public AsynchronousTests(AsynchronousFixture fixture)
         {
             _fixture = fixture;
             _connection = fixture.GetConnection;
@@ -22,12 +21,12 @@ namespace UnkillableAsyncConsumer
         [Fact]
         public async Task TryingToKillConnection_WithAnHangingConsumer_WillWaitIndefinitely()
         {
-            var queue = Guid.NewGuid().ToString();
+            var queue = $"Asynchronous-{Guid.NewGuid()}";
 
             using var model = _connection.CreateModel();
             var consumer = new AsyncEventingBasicConsumer(model);
 
-            model.QueueDeclare(queue, true, false);
+            model.QueueDeclare(queue, true, false, false);
             model.QueueBind(queue, _fixture.Exchange, nameof(TryingToKillConnection_WithAnHangingConsumer_WillWaitIndefinitely));
 
             consumer.Received += async (_, ea) =>
@@ -54,12 +53,12 @@ namespace UnkillableAsyncConsumer
         [Fact]
         public async Task TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillWaitIndefinitely()
         {
-            var queue = Guid.NewGuid().ToString();
+            var queue = $"Asynchronous-Timeout-{Guid.NewGuid()}";
 
             using var model = _connection.CreateModel();
             var consumer = new AsyncEventingBasicConsumer(model);
 
-            model.QueueDeclare(queue, true, false);
+            model.QueueDeclare(queue, true, false, false);
             model.QueueBind(queue, _fixture.Exchange, nameof(TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillWaitIndefinitely));
 
             consumer.Received += async (_, ea) =>
