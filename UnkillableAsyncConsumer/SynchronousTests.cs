@@ -46,6 +46,7 @@ namespace UnkillableAsyncConsumer
             await Task.Delay(5000);
 
             // close the connection without timeout, expected to never finish has the message processing never finishes
+            // Consumer will be killed
             _connection.Close();
 
             Assert.True(true);
@@ -79,7 +80,8 @@ namespace UnkillableAsyncConsumer
             await Task.Delay(5000);
 
             // close the connection with timeout, consumer is expected to be killed if the timeout passes
-            _connection.Close(1000);
+            // wait timeout is not respected and consumer will be killed before 5sec
+            _connection.Close(5000);
 
             Assert.True(true);
         }
