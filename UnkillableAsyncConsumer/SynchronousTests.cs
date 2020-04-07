@@ -20,7 +20,7 @@ namespace UnkillableAsyncConsumer
         }
 
         [Fact]
-        public async Task TryingToKillConnection_WithAnHangingConsumer_WillWaitIndefinitely()
+        public async Task TryingToKillConnection_WithAnHangingConsumer_WillKillConsumer()
         {
             var queue = $"Synchronous-{Guid.NewGuid()}";
 
@@ -28,7 +28,7 @@ namespace UnkillableAsyncConsumer
             var consumer = new EventingBasicConsumer(model);
 
             model.QueueDeclare(queue, true, false, false);
-            model.QueueBind(queue, _fixture.Exchange, nameof(TryingToKillConnection_WithAnHangingConsumer_WillWaitIndefinitely));
+            model.QueueBind(queue, _fixture.Exchange, nameof(TryingToKillConnection_WithAnHangingConsumer_WillKillConsumer));
 
             consumer.Received += (_, ea) =>
             {
@@ -41,7 +41,7 @@ namespace UnkillableAsyncConsumer
             };
             model.BasicConsume(queue: queue, autoAck: false, consumer: consumer);
 
-            model.BasicPublish(_fixture.Exchange, nameof(TryingToKillConnection_WithAnHangingConsumer_WillWaitIndefinitely), null, Encoding.UTF8.GetBytes("Message"));
+            model.BasicPublish(_fixture.Exchange, nameof(TryingToKillConnection_WithAnHangingConsumer_WillKillConsumer), null, Encoding.UTF8.GetBytes("Message"));
 
             await Task.Delay(5000);
 
@@ -53,7 +53,7 @@ namespace UnkillableAsyncConsumer
         }
 
         [Fact]
-        public async Task TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillWaitIndefinitely()
+        public async Task TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillKillConsumerAndNotRespectTimeout()
         {
             var queue = $"Synchronous-Timeout-{Guid.NewGuid()}";
 
@@ -61,7 +61,7 @@ namespace UnkillableAsyncConsumer
             var consumer = new EventingBasicConsumer(model);
 
             model.QueueDeclare(queue, true, false, false);
-            model.QueueBind(queue, _fixture.Exchange, nameof(TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillWaitIndefinitely));
+            model.QueueBind(queue, _fixture.Exchange, nameof(TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillKillConsumerAndNotRespectTimeout));
 
             consumer.Received += (_, ea) =>
             {
@@ -75,7 +75,7 @@ namespace UnkillableAsyncConsumer
             model.BasicConsume(queue: queue, autoAck: false, consumer: consumer);
 
 
-            model.BasicPublish(_fixture.Exchange, nameof(TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillWaitIndefinitely), null, Encoding.UTF8.GetBytes("Message"));
+            model.BasicPublish(_fixture.Exchange, nameof(TryingToKillConnectionWithTimeout_WithAnHangingConsumer_WillKillConsumerAndNotRespectTimeout), null, Encoding.UTF8.GetBytes("Message"));
 
             await Task.Delay(5000);
 
